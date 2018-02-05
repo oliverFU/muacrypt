@@ -104,6 +104,9 @@ def parse_one_ac_header_from_string(string):
 def parse_one_ac_header_from_msg(msg, FromList=None):
     if msg.get_content_type() == 'multipart/report':
         return ACParseResult(error="Ignoring 'multipart/report' message.")
+    froms = msg.get_all("From") or []
+    if len(email.utils.getaddresses(froms)) > 1:
+        return ACParseResult(error="Ignoring message with more than one address in From header.")
     results = []
     err_results = []
     for ac_header_value in msg.get_all("Autocrypt") or []:
